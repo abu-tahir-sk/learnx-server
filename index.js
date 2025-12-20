@@ -41,7 +41,12 @@ const run = async () => {
     });
 
     app.get("/assignments", async (req, res) => {
-      const cursor = assignmentsCollection.find();
+      const email = req.query.email;
+      let query = {};
+      if(email) {
+        query = {hr_email: email}
+      }
+      const cursor = assignmentsCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
