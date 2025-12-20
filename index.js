@@ -2,12 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-
 
 const uri = `mongodb+srv://${process.env.USER_BD}:${process.env.USER_PASS}@cluster0.qha6rup.mongodb.net/?appName=Cluster0`;
 
@@ -32,10 +31,10 @@ const run = async () => {
       .db("jobAssessment")
       .collection("assignments");
 
-      // add assignments 
+    // add assignments
     app.post("/assignments", async (req, res) => {
       const newAssignments = req.body;
-      console.log(newAssignments)
+      console.log(newAssignments);
       const result = await assignmentsCollection.insertOne(newAssignments);
       res.send(result);
     });
@@ -43,11 +42,19 @@ const run = async () => {
     app.get("/assignments", async (req, res) => {
       const email = req.query.email;
       let query = {};
-      if(email) {
-        query = {hr_email: email}
+      if (email) {
+        query = { email: email };
       }
       const cursor = assignmentsCollection.find(query);
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // delete assignments
+    app.delete("/assignments/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await assignmentsCollection.deleteOne(query);
       res.send(result);
     });
   } finally {
