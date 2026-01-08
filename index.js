@@ -26,7 +26,7 @@ const run = async () => {
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
 
-    // assignments collection related apis
+    // assignments collection 
     const assignmentsCollection = client
       .db("jobAssessment")
       .collection("assignments");
@@ -49,11 +49,55 @@ const run = async () => {
       const result = await cursor.toArray();
       res.send(result);
     });
+    // get update route
+    app.get("/assignment/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await assignmentsCollection.findOne(query);
+      res.send(result);
+    });
+    // update assignments
+    app.put("/assignment/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedAssignment = req.body;
+      const assignment = {
+        $set: {
+          title: updatedAssignment.title,
+          thumbnail: updatedAssignment.thumbnail,
+          description: updatedAssignment.description,
+          dueDate: updatedAssignment.dueDate,
+          difficulty: updatedAssignment.difficulty,
+          marks: updatedAssignment.marks,
+        },
+      };
+      const result = await assignmentsCollection.updateOne(
+        query,
+        assignment,
+        options
+      );
+      res.send(result);
+    });
 
     // delete assignments
     app.delete("/assignments/:id", async (req, res) => {
       const id = req.params.id;
+      const userEmail = req.headers.email;
       const query = { _id: new ObjectId(id) };
+
+      const assignment = await assignmentsCollection.findOne(query);
+
+      if (!assignment) {
+        return res.json({ error: true, message: "Assignment not found " });
+      }
+      if (assignment.email !== userEmail) {
+        return res.json({
+          error: true,
+          message: "You are not allowed to delete this assignment",
+        });
+      }
+
       const result = await assignmentsCollection.deleteOne(query);
       res.send(result);
     });
