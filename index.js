@@ -26,7 +26,7 @@ const run = async () => {
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
 
-    // assignments collection 
+    // assignments collections assessment
     const assignmentsCollection = client
       .db("jobAssessment")
       .collection("assignments");
