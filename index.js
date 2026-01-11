@@ -31,7 +31,7 @@ const run = async () => {
       .db("jobAssessment")
       .collection("assignments");
 
-    // add assignments
+    // add assignment
     app.post("/assignments", async (req, res) => {
       const newAssignments = req.body;
       console.log(newAssignments);
