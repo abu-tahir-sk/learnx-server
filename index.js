@@ -56,7 +56,7 @@ const run = async () => {
       const result = await assignmentsCollection.findOne(query);
       res.send(result);
     });
-    // update assignments
+    // update 
     app.put("/assignment/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
